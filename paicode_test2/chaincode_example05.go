@@ -20,7 +20,7 @@ import (
 	"errors"
 	"fmt"
 	"strconv"
-
+	"encoding/hex"
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 	"github.com/hyperledger/fabric/core/util"
 )
@@ -64,6 +64,13 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
 	var sum string             // Sum entity
 	var Aval, Bval, sumVal int // value of sum entity - to be computed
 	var err error
+
+	metadata, err := stub.GetCallerMetadata()
+	if err != nil {
+		fmt.Println(err)
+	}else{
+		fmt.Println("metadata is", hex.Dump(metadata))
+	}
 
 	if len(args) != 2 {
 		return nil, errors.New("Incorrect number of arguments. Expecting 2")

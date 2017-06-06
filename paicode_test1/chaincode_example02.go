@@ -26,7 +26,7 @@ import (
 	"errors"
 	"fmt"
 	"strconv"
-
+	"encoding/hex"
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 )
 
@@ -82,6 +82,13 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
 	var X int          // Transaction value
 	var err error
 
+	metadata, err := stub.GetCallerMetadata()
+	if err != nil {
+		fmt.Println(err)
+	}else{
+		fmt.Println("metadata is", hex.Dump(metadata))
+	}
+
 	if len(args) != 3 {
 		return nil, errors.New("Incorrect number of arguments. Expecting 3")
 	}
@@ -117,6 +124,7 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
 	Aval = Aval - X
 	Bval = Bval + X
 	fmt.Printf("Aval = %d, Bval = %d\n", Aval, Bval)
+	
 
 	// Write the state back to the ledger
 	err = stub.PutState(A, []byte(strconv.Itoa(Aval)))
@@ -156,6 +164,13 @@ func (t *SimpleChaincode) Query(stub shim.ChaincodeStubInterface, function strin
 	}
 	var A string // Entities
 	var err error
+
+	metadata, err := stub.GetCallerMetadata()
+	if err != nil {
+		fmt.Println(err)
+	}else{
+		fmt.Println("metadata is", hex.Dump(metadata))
+	}
 
 	if len(args) != 1 {
 		return nil, errors.New("Incorrect number of arguments. Expecting name of the person to query")
