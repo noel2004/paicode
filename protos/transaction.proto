@@ -11,13 +11,11 @@ message Signature {
 message PublicKey{
 }
 
-message TransactionBase {
-
-    PublicKey key = 1;
-    Signature sign = 2;
-
+message AuthChaincode {
+	uint32	code = 1;
 }
 
-message AuthChaincode {
-	TransactionBase b = 1;
+message Fundbase {
+	uint32	paidelta = 1;
+	string	toUserId = 2;
 }
