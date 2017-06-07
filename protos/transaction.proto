@@ -1,0 +1,23 @@
+
+syntax = "proto3";
+
+package protos;
+
+import "persistent.proto";
+
+message Signature {
+}
+
+message PublicKey{
+}
+
+message TransactionBase {
+
+    PublicKey key = 1;
+    Signature sign = 2;
+
+}
+
+message AuthChaincode {
+	TransactionBase b = 1;
+}

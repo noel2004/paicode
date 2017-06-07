@@ -1,0 +1,21 @@
+//paicode use a protobuf 3 defination as the persistent data format 
+
+syntax = "proto3";
+
+package protos;
+
+message UserId {
+	bytes hash = 1;	//hash user's public key (a marshalled bytes of asn1 DER) like bitcoin by a ripemd160 + sha256,
+}
+
+message UserData {
+	int64  pais = 1; //the amount of user owned unit of pai, use signed rather than unsigned integer to reserve possibilities
+	repeated uint32 authcodes = 10; //chaincode which user has allowed to invoked the base transaction from
+}
+
+//the table of registared chaincode
+message RegChainCodeTable{
+
+	map<uint32, string> t = 1;
+
+}
