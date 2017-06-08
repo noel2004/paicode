@@ -8,7 +8,6 @@ import (
 	"crypto/ecdsa"
 	"crypto/elliptic"
 	"math/big"	
-
 )
 
 type ECDSAPriv struct {
@@ -44,6 +43,14 @@ const(
 	ECP256_SEC2k1 = 16
 )
 
+func GetEC(curveType int) (elliptic.Curve, error){
+	switch(curveType){
+		case 1:
+			return elliptic.P256(), nil
+		default:
+			return nil, errors.New(fmt.Sprintf("%d is not a valid curve defination", curveType))		
+	}	
+}
 
 func DumpPrivKey(priv ECDSAPriv) (string, error){
 	
@@ -65,19 +72,15 @@ func PrivKeyfromString(kstr string) (*ECDSAPriv, error){
 	return importPrivKey(data)	
 }
 
-func (k ECDSAPriv) apply() (*ecdsa.PrivateKey, error){
-	
-	var curve elliptic.Curve	
+func (k ECDSAPriv) Apply() (*ecdsa.PrivateKey, error){
 	
 	if k.D == nil{
 		return nil, errors.New(fmt.Sprintf("empty seed field"))	
 	}
 	
-	switch(k.CurveType){
-		case 1:
-			curve = elliptic.P256()
-		default:
-			return nil, errors.New(fmt.Sprintf("%d is not a valid curve defination", k.CurveType))		
+	curve, err := GetEC(int(k.CurveType))
+	if err != nil{
+		return nil, err
 	}
 	
 	retx, rety := curve.ScalarBaseMult(k.D.Bytes())

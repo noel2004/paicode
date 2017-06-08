@@ -22,7 +22,7 @@ func TestApply_Privkey(t *testing.T){
 	}	
 	
 	var prvkeyt = ECDSAPriv{ECP256_FIPS186, prvkeystd.D}
-	prvkeytapp, err := prvkeyt.apply()
+	prvkeytapp, err := prvkeyt.Apply()
 	
 	if err != nil{
 		t.Fatal(err)
@@ -39,8 +39,17 @@ func TestApply_Privkey(t *testing.T){
 	}
 	
 	if !ecdsa.Verify(&prvkeystd.PublicKey, rb, sx, sy) {
-		t.Fatal("verify private key fail")
+		t.Fatal("verify signature fail (signatured by applied priv)")
 	}
+	
+	sx, sy, err = ecdsa.Sign(rand.Reader, prvkeystd, rb)
+	if err != nil{
+		t.Fatal(err)
+	}
+	
+	if !ecdsa.Verify(&prvkeytapp.PublicKey, rb, sx, sy) {
+		t.Fatal("verify signature key fail (signatured by original priv)")
+	}	
 }
 
 func TestDump_Privkey(t *testing.T){
