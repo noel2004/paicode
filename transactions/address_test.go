@@ -9,10 +9,14 @@ import (
 	paicrypto "gamecenter.mobi/paicode/crypto"
 )
 
+const (
+	testPrefix int = 1
+)
+
 func testIdA(t *testing.T, pk1 *PublicKey, pk2 *PublicKey){
 
-	id1 := pk1.GetUserId()
-	id2 := pk2.GetUserId()
+	id1 := pk1.GetUserId(testPrefix)
+	id2 := pk2.GetUserId(testPrefix)
 	
 	if len(id1) == 0 || len(id2) == 0{
 		t.Fatal("Invalid id", id1, "--", id2)
@@ -28,8 +32,8 @@ func testIdA(t *testing.T, pk1 *PublicKey, pk2 *PublicKey){
 
 func testIdB(t *testing.T, pk1 *PublicKey, pk2 *PublicKey){
 
-	id1 := pk1.GetUserId()
-	id2 := pk2.GetUserId()
+	id1 := pk1.GetUserId(testPrefix)
+	id2 := pk2.GetUserId(testPrefix)
 	
 	if len(id1) == 0 || len(id2) == 0{
 		t.Fatal("Invalid id", id1, "--", id2)
@@ -83,4 +87,30 @@ func TestDump_Userid(t *testing.T){
 	}
 	
 	
+}
+
+func TestVerify_Userid(t *testing.T){
+	
+	rb := make([]byte, 32)
+	_, err := rand.Read(rb)
+	if err != nil{
+		t.Skip("rand make 256bit bytes fail", err)
+	}	
+	
+	sed := new(big.Int)	
+	sed.SetBytes(rb)
+	
+	publick := NewPublicKeyFromPriv(&paicrypto.ECDSAPriv{paicrypto.ECP256_FIPS186, sed})
+	
+	uid := publick.GetUserId(1)
+	
+	if b, err := VerifyUserId(uid, 1); !b{
+		t.Fatal("verify fail 1", err)
+	}
+	
+	if b, err := VerifyUserId(uid, 0); b{
+		t.Fatal("verify error 2")		
+	}else{
+		t.Log("verfiy ret", err)
+	}
 }
